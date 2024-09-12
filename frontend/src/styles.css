@@ -1,0 +1,30 @@
+/* src/styles.css */
+body {
+  font-family: Arial, sans-serif;
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #ddd;
+  padding: 10px;
+}
+
+nav a {
+  text-decoration: none;
+  color: black;
+}
+
+nav a.active {
+  font-weight: bold;
+}
+
+.job-card, .bookmark-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 10px;
+}
+
+.job-card button {
+  margin-top: 10px;
+}
