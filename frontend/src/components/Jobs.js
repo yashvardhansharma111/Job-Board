@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 
 const Jobs = ({ setBookmarkedJobs, bookmarkedJobs }) => {
   const [jobs, setJobs] = useState([]);
@@ -7,55 +8,38 @@ const Jobs = ({ setBookmarkedJobs, bookmarkedJobs }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchJobs = useCallback(() => {
+  const fetchJobs = useCallback(async () => {
     setLoading(true);
     try {
-      // Dummy data for jobs
-      const dummyData = [
-        {
-          id: 631160,
-          title: 'Telecallers wanted',
-          primary_details: {
-            Place: 'Ameerpet, Hyderabad',
-            Salary: '₹12000 - ₹16000',
-            Job_Type: 'ఆఫీస్ జాబ్ ',
-            Experience: 'Any Experience',
-            Qualification: 'Graduate'
-          },
-          contact_preference: {
-            whatsapp_no: '8465809861'
-          },
-          // Add other properties as needed
-        },
-        {
-          id: 631010,
-          title: 'Wanted female secretary',
-          primary_details: {
-            Place: 'Kondapur, Hyderabad',
-            Salary: '₹15000 - ₹25000',
-            Job_Type: 'ఆఫీస్ జాబ్ ',
-            Experience: '1-3 Years',
-            Qualification: 'Graduate'
-          },
-          contact_preference: {
-            whatsapp_no: '9052051923'
-          },
-          // Add other properties as needed
-        }
-      ];
+      const response = await axios.get(
+        `https://testapi.getlokalapp.com/common/jobs`, 
+        { params: { page } } // Add page parameter to API call
+      );
 
-      // Simulate a delay to mimic API call
-      setTimeout(() => {
-        setJobs(prevJobs => [...prevJobs, ...dummyData]);
-        if (dummyData.length === 0) {
+      const data = response.data;
+      console.log('API Response:', data); // Log the API response to inspect its structure
+
+      // Check the structure of the response here and set jobs accordingly
+      if (Array.isArray(data.jobs)) {
+        setJobs(prevJobs => [...prevJobs, ...data.jobs]);
+        // Check if there are more jobs to load
+        if (data.jobs.length === 0) {
           setHasMore(false);
         }
-        setLoading(false);
-      }, 1000); // Adjust delay as needed
+      } else if (Array.isArray(data.results)) {
+        // Handle if jobs are inside `results`
+        setJobs(prevJobs => [...prevJobs, ...data.results]);
+        if (data.results.length === 0) {
+          setHasMore(false);
+        }
+      } else {
+        setError('Invalid response structure');
+      }
 
     } catch (err) {
       setError(`Failed to fetch jobs: ${err.message}`);
       console.error('Fetch error details:', err);
+    } finally {
       setLoading(false);
     }
   }, [page]);

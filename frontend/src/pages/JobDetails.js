@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -10,9 +11,8 @@ const JobDetails = () => {
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
-        const response = await fetch(`https://testapi.getlokalapp.com/common/jobs/${id}`);
-        const data = await response.json();
-        setJob(data);
+        const response = await axios.get(`https://testapi.getlokalapp.com/common/jobs/${id}`);
+        setJob(response.data); // The response data from Axios
       } catch (err) {
         setError('Failed to fetch job details');
       } finally {
